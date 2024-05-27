@@ -59,7 +59,6 @@
                             <h5 class="card-title">Автор: {{ $photo->user->name }}</h5>
                             <p class="card-text">Описание: {{ $photo->description }}</p>
                             <p class="card-text"><small class="text-muted">{{ $photo->created_at->format('d.m.Y') }}</small></p>
-                            <p class="card-text">{{ __('Лайки:') }} {{ $photo->likes_count }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 @auth
                                     <form method="POST" action="{{ route('photo.like', $photo->id) }}" class="d-inline">

@@ -15,6 +15,9 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script> --}}
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -26,7 +29,7 @@
                     </a>
                 @else
                     <a class="navbar-brand" href="{{ url('/') }}">
-                        {{ __('Привет, ') }} {{ Auth::user()->name }}! {{ __('Рады вас видеть.') }}
+                        {{ __('Привет, ') }} {{ Auth::user()->name }}! {{ Auth::user()->is_admin ? __('Добро пожаловать, Админ!') : __('Рады вас видеть.') }}
                     </a>
                 @endguest
 
@@ -58,15 +61,31 @@
                                 </li>
                             @endif
                         @else
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url('/home') }}">{{ __('Домой') }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('photos.index') }}">{{ __('Мои фото') }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('photos.create') }}">{{ __('Загрузить фото') }}</a>
-                            </li>
+                            @if (Auth::user()->is_admin)
+                                <li class="nav-item dropdown">
+                                    <a id="adminDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        {{ __('Админ панель') }}
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                                        <a class="dropdown-item" href="{{ route('admin.users.index') }}">
+                                            {{ __('Пользователи') }}
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('admin.adminphoto.index') }}">
+                                            {{ __('Фото') }}
+                                        </a>
+                                    </div>
+                                </li>
+                            @else
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url('/home') }}">{{ __('Домой') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('photos.index') }}">{{ __('Мои фото') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('photos.create') }}">{{ __('Загрузить фото') }}</a>
+                                </li>
+                            @endif
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
