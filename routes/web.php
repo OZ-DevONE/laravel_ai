@@ -23,6 +23,7 @@ Route::middleware(['banned'])->group(function () {
     Route::get('/photo', [PhotoDashboardController::class, 'index'])->name('photo.index');
     
     Route::middleware('auth')->group(function () {
+        Route::get('/photos/{id}', [PhotoDashboardController::class, 'show'])->name('photo.show');
         Route::post('/photo/{photo}/comment', [PhotoDashboardController::class, 'storeComment'])->name('photo.comment.store');
         Route::patch('/comment/{comment}', [PhotoDashboardController::class, 'updateComment'])->name('comment.update');
         Route::delete('/comment/{comment}', [PhotoDashboardController::class, 'destroyComment'])->name('comment.destroy');

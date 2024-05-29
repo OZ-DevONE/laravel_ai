@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
-use Illuminate\Support\Facades\Cache;
 
 class PhotoDashboardController extends Controller
 {
@@ -40,7 +39,6 @@ class PhotoDashboardController extends Controller
     
         return view('photos.dashboard', compact('photos', 'filtersApplied'));
     }
-       
 
     public function __construct()
     {
