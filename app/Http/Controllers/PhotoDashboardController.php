@@ -42,7 +42,9 @@ class PhotoDashboardController extends Controller
 
     public function show($id)
     {
-        $photo = Photo::with(['user', 'comments.user', 'likes', 'dislikes'])->findOrFail($id);
+        $photo = Photo::with(['user', 'comments.user'])
+            ->withCount(['likes', 'dislikes'])
+            ->findOrFail($id);
         $comments = $photo->comments()->orderBy('created_at', 'desc')->paginate(5);
 
         return view('photos.show', compact('photo', 'comments'));
