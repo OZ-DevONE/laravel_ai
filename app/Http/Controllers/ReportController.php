@@ -22,8 +22,8 @@ class ReportController extends Controller
         
         // Валидация данных
         $request->validate([
-            'reason' => 'required|string|max:255',
-            'custom_reason' => 'nullable|string|max:1000',
+            'reason' => 'required|string|in:Нарушение цензуры,Оскорбительный контент,Спам,Прочее|max:255',
+            'custom_reason' => 'nullable|string|max:200',
         ]);
 
         // Проверка лимитов жалоб
@@ -63,3 +63,4 @@ class ReportController extends Controller
         return back()->with('success', 'Жалоба успешно удалена.');
     }
 }
+

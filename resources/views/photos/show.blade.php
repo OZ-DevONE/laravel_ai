@@ -54,11 +54,12 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form method="POST" action="{{ route('report.store', $photo->id) }}">
+                                <form method="POST" action="{{ route('report.store', $photo->id) }}" onsubmit="return validateForm()">
                                     @csrf
                                     <div class="form-group mt-2">
                                         <label for="reason">{{ __('Причина') }}</label>
-                                        <select name="reason" id="reason" class="form-control">
+                                        <select name="reason" id="reason" class="form-control" required>
+                                            <option value="" disabled selected>{{ __('Выберите причину') }}</option>
                                             <option value="Нарушение цензуры">{{ __('Нарушение цензуры') }}</option>
                                             <option value="Оскорбительный контент">{{ __('Оскорбительный контент') }}</option>
                                             <option value="Спам">{{ __('Спам') }}</option>
@@ -67,7 +68,7 @@
                                     </div>
                                     <div class="form-group mt-2" id="custom-reason" style="display: none;">
                                         <label for="custom_reason">{{ __('Опишите причину') }}</label>
-                                        <textarea name="custom_reason" id="custom_reason" class="form-control" rows="3" placeholder="{{ __('Ваш комментарий...') }}"></textarea>
+                                        <textarea name="custom_reason" id="custom_reason" class="form-control" rows="3" placeholder="{{ __('Ваш комментарий...') }}" maxlength="200"></textarea>
                                     </div>
                                     <div class="mt-2">
                                         <p>{{ __('Правила подачи жалобы:') }}</p>
@@ -90,10 +91,24 @@
                         var customReason = document.getElementById('custom-reason');
                         if (this.value === 'Прочее') {
                             customReason.style.display = 'block';
+                            document.getElementById('custom_reason').required = true;
                         } else {
                             customReason.style.display = 'none';
+                            document.getElementById('custom_reason').required = false;
                         }
                     });
+
+                    function validateForm() {
+                        var reason = document.getElementById('reason').value;
+                        var customReason = document.getElementById('custom_reason').value;
+
+                        if (reason === 'Прочее' && customReason.trim() === '') {
+                            alert('Пожалуйста, опишите причину жалобы.');
+                            return false;
+                        }
+
+                        return true;
+                    }
                 </script>
 
                 <h3 class="mt-4">{{ __('Оставить комментарий') }}</h3>
