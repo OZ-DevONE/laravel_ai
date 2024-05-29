@@ -8,7 +8,6 @@ use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Dislike;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class AdminPhotoController extends Controller

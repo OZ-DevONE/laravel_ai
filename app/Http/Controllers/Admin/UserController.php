@@ -85,8 +85,8 @@ class UserController extends Controller
 
         BannedUser::create([
             'user_id' => $user->id,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->header('User-Agent')
+            'ip_address' => $user->ip_address,
+            'user_agent' => $user->user_agent
         ]);
 
         // Dispatch jobs to delete user-related data
