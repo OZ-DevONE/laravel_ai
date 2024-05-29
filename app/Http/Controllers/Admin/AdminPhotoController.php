@@ -12,11 +12,36 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminPhotoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $photos = Photo::withCount(['comments', 'likes', 'dislikes'])->paginate(10);
-        return view('admin.photo.index', compact('photos'));
+        $query = Photo::withCount(['comments', 'likes', 'dislikes']);
+    
+        // Фильтрация по статусу блокировки
+        if ($request->filled('is_blocked')) {
+            $query->where('is_blocked', $request->input('is_blocked'));
+        }
+    
+        // Фильтрация по пользователю
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->input('user_id'));
+        }
+    
+        // Фильтрация по дате
+        if ($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->input('from_date'));
+        }
+    
+        if ($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->input('to_date'));
+        }
+    
+        $photos = $query->orderBy('created_at', 'desc')->paginate(10);
+        $users = \App\Models\User::all(); // Получение всех пользователей для фильтрации
+    
+        return view('admin.photo.index', compact('photos', 'users'));
     }
+    
+    
 
     public function edit($id)
     {
@@ -32,20 +57,28 @@ class AdminPhotoController extends Controller
             'likes' => 'required|integer|min:0',
             'dislikes' => 'required|integer|min:0',
             'comments.*' => 'nullable|string|max:255',
+            'is_blocked' => 'required|boolean',
+            'block_description' => 'nullable|string|max:255',
         ]);
-
-        $photo = Photo::findOrFail($id);
+    
+        $photo = Photo::withCount(['likes', 'dislikes', 'comments'])->findOrFail($id);
         $photo->description = $request->input('description');
-        
+    
         if ($request->hasFile('path')) {
             $path = $request->file('path')->store('photos', 'public');
             $photo->path = $path;
         }
-
+    
+        $photo->is_blocked = $request->input('is_blocked');
+        $photo->block_description = $request->input('block_description');
         $photo->save();
-
+    
+        if ($photo->is_blocked) {
+            $photo->blockPhoto($request->input('block_description'));
+        }
+    
         // Обновление количества лайков
-        $likesDiff = $request->input('likes') - $photo->likes->count();
+        $likesDiff = $request->input('likes') - $photo->likes_count;
         if ($likesDiff > 0) {
             for ($i = 0; $i < $likesDiff; $i++) {
                 Like::create(['photo_id' => $photo->id, 'user_id' => auth()->id()]);
@@ -53,9 +86,9 @@ class AdminPhotoController extends Controller
         } elseif ($likesDiff < 0) {
             $photo->likes()->limit(abs($likesDiff))->delete();
         }
-
+    
         // Обновление количества дизлайков
-        $dislikesDiff = $request->input('dislikes') - $photo->dislikes->count();
+        $dislikesDiff = $request->input('dislikes') - $photo->dislikes_count;
         if ($dislikesDiff > 0) {
             for ($i = 0; $i < $dislikesDiff; $i++) {
                 Dislike::create(['photo_id' => $photo->id, 'user_id' => auth()->id()]);
@@ -63,14 +96,14 @@ class AdminPhotoController extends Controller
         } elseif ($dislikesDiff < 0) {
             $photo->dislikes()->limit(abs($dislikesDiff))->delete();
         }
-
+    
         if ($request->has('comments')) {
             foreach ($request->comments as $commentId => $content) {
                 $comment = Comment::findOrFail($commentId);
                 $comment->update(['content' => $content]);
             }
         }
-
+    
         return redirect()->route('admin.adminphoto.index')->with('success', 'Фото обновлено успешно');
     }
 

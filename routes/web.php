@@ -51,5 +51,7 @@ Route::middleware(['banned'])->group(function () {
         Route::delete('comments/{comment}', [AdminPhotoController::class, 'destroyComment'])->name('comments.destroy');
 
         Route::resource('reports', AdminReportController::class);
+        
+        Route::post('comments/{comment}/destroy', [AdminPhotoController::class, 'destroyComment'])->name('comments.destroy');    
     });    
 });

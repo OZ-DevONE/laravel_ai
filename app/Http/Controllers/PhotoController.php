@@ -21,14 +21,17 @@ class PhotoController extends Controller
             $cacheKey = 'user_' . $user->id . '_photos_page_' . $page;
             
             $photos = Cache::remember($cacheKey, now()->addMinutes(10), function() use ($user) {
-                return $user->photos()->with(['user', 'comments.user', 'likes', 'dislikes'])->withCounts()->paginate(10);
+                return $user->photos()->with(['user', 'comments.user', 'likes', 'dislikes'])
+                              ->withCounts()
+                              ->paginate(10);
             });
         } else {
             $photos = collect();
         }
         
         return view('photos.index', compact('photos'));
-    }    
+    }
+      
 
     /**
      * Show the form for creating a new resource.

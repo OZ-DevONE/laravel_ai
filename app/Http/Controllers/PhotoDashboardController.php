@@ -23,6 +23,7 @@ class PhotoDashboardController extends Controller
             'sort' => 'nullable|string|in:created_at,-created_at,likes_count,-likes_count,comments_count,-comments_count,dislikes_count,-dislikes_count',
         ]);
 
+        // Исключаем забаненные фото
         $photos = QueryBuilder::for(Photo::with(['user', 'comments.user', 'likes', 'dislikes']))
             ->allowedFilters([
                 AllowedFilter::partial('description'),
@@ -39,12 +40,13 @@ class PhotoDashboardController extends Controller
                 '-likes_count',
                 '-dislikes_count',
             ])
+            ->where('is_blocked', false) // Фильтр для исключения забаненных фото
             ->withCounts()
             ->paginate(6)
             ->appends(request()->query());
-    
+
         $filtersApplied = $request->has('filter');
-    
+
         return view('photos.dashboard', compact('photos', 'filtersApplied'));
     }
 
