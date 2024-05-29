@@ -6,6 +6,7 @@ use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\PhotoDashboardController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\ReportController;
 
 Route::middleware(['banned'])->group(function () {
     Route::get('/', function () {
@@ -25,6 +26,10 @@ Route::middleware(['banned'])->group(function () {
     Route::get('/photo/{id}', [PhotoDashboardController::class, 'show'])->name('photo.show');
     
     Route::middleware('auth')->group(function () {
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::delete('/reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
+    
+        Route::post('/photo/{photo}/report', [ReportController::class, 'store'])->name('report.store');
         Route::post('/photo/{photo}/comment', [PhotoDashboardController::class, 'storeComment'])->name('photo.comment.store');
         Route::patch('/comment/{comment}', [PhotoDashboardController::class, 'updateComment'])->name('comment.update');
         Route::delete('/comment/{comment}', [PhotoDashboardController::class, 'destroyComment'])->name('comment.destroy');

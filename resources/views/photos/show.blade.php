@@ -29,6 +29,73 @@
             </div>
 
             @auth
+                <!-- Complaint button -->
+                <div class="mt-4">
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if($errors->has('limit'))
+                        <div class="alert alert-danger">
+                            {{ $errors->first('limit') }}
+                        </div>
+                    @endif
+
+                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#complaintModal">{{ __('Пожаловаться') }}</button>
+                </div>
+
+                <!-- Complaint Modal -->
+                <div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="complaintModalLabel">{{ __('Пожаловаться') }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" action="{{ route('report.store', $photo->id) }}">
+                                    @csrf
+                                    <div class="form-group mt-2">
+                                        <label for="reason">{{ __('Причина') }}</label>
+                                        <select name="reason" id="reason" class="form-control">
+                                            <option value="Нарушение цензуры">{{ __('Нарушение цензуры') }}</option>
+                                            <option value="Оскорбительный контент">{{ __('Оскорбительный контент') }}</option>
+                                            <option value="Спам">{{ __('Спам') }}</option>
+                                            <option value="Прочее">{{ __('Прочее') }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mt-2" id="custom-reason" style="display: none;">
+                                        <label for="custom_reason">{{ __('Опишите причину') }}</label>
+                                        <textarea name="custom_reason" id="custom_reason" class="form-control" rows="3" placeholder="{{ __('Ваш комментарий...') }}"></textarea>
+                                    </div>
+                                    <div class="mt-2">
+                                        <p>{{ __('Правила подачи жалобы:') }}</p>
+                                        <ul>
+                                            <li>{{ __('Выберите подходящую причину для жалобы.') }}</li>
+                                            <li>{{ __('Если вы выбираете "Прочее", пожалуйста, подробно опишите причину жалобы.') }}</li>
+                                            <li>{{ __('Не спамьте жалобами. Администратор рассмотрит вашу жалобу в ближайшее время.') }}</li>
+                                            <li>{{ __('Статус вашей жалобы можно будет просмотреть в выпадающем меню пользователя в правом верхнем углу.') }}</li>
+                                        </ul>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm mt-2">{{ __('Отправить жалобу') }}</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.getElementById('reason').addEventListener('change', function() {
+                        var customReason = document.getElementById('custom-reason');
+                        if (this.value === 'Прочее') {
+                            customReason.style.display = 'block';
+                        } else {
+                            customReason.style.display = 'none';
+                        }
+                    });
+                </script>
+
                 <h3 class="mt-4">{{ __('Оставить комментарий') }}</h3>
                 <form method="POST" action="{{ route('photo.comment.store', $photo->id) }}">
                     @csrf
