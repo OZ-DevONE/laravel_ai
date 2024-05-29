@@ -5,13 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class ReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $userId = Auth::id();
-        $reports = Report::where('user_id', $userId)->with('photo')->paginate(10);
+        $reports = QueryBuilder::for(Report::class)
+            ->where('user_id', $userId)
+            ->allowedFilters([
+                AllowedFilter::exact('status'),
+            ])
+            ->orderByRaw("CASE WHEN status = 'Новая' THEN 0 ELSE 1 END, created_at DESC")
+            ->with('photo')
+            ->paginate(10)
+            ->appends($request->query());
 
         return view('reports.index', compact('reports'));
     }
@@ -58,9 +68,12 @@ class ReportController extends Controller
             abort(403, 'Вы не можете удалить эту жалобу.');
         }
 
+        if ($report->status !== 'Новая') {
+            return back()->withErrors(['limit' => 'Вы не можете удалить эту жалобу, так как она уже обработана.']);
+        }
+
         $report->delete();
 
         return back()->with('success', 'Жалоба успешно удалена.');
     }
 }
-

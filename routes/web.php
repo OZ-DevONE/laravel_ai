@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminPhotoController;
+use App\Http\Controllers\Admin\AdminReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\PhotoDashboardController;
@@ -48,5 +49,7 @@ Route::middleware(['banned'])->group(function () {
         // Роуты для работы с комментариями
         Route::put('comments/{comment}', [AdminPhotoController::class, 'updateComment'])->name('comments.update');
         Route::delete('comments/{comment}', [AdminPhotoController::class, 'destroyComment'])->name('comments.destroy');
+
+        Route::resource('reports', AdminReportController::class);
     });    
 });

@@ -72,6 +72,9 @@
                                         <a class="dropdown-item" href="{{ route('admin.adminphoto.index') }}">
                                             {{ __('Фото') }}
                                         </a>
+                                        <a class="dropdown-item" href="{{ route('admin.reports.index') }}">
+                                            {{ __('Жалобы') }}
+                                        </a>
                                     </div>
                                 </li>
                             @else
