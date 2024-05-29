@@ -32,12 +32,20 @@ class PhotoDashboardController extends Controller
                 '-dislikes_count',
             ])
             ->withCounts()
-            ->paginate(3)
+            ->paginate(6)
             ->appends(request()->query());
     
         $filtersApplied = $request->has('filter');
     
         return view('photos.dashboard', compact('photos', 'filtersApplied'));
+    }
+
+    public function show($id)
+    {
+        $photo = Photo::with(['user', 'comments.user', 'likes', 'dislikes'])->findOrFail($id);
+        $comments = $photo->comments()->orderBy('created_at', 'desc')->paginate(5);
+
+        return view('photos.show', compact('photo', 'comments'));
     }
 
     public function __construct()

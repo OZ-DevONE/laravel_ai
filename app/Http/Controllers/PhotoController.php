@@ -38,14 +38,6 @@ class PhotoController extends Controller
         return view('photos.create');
     }
 
-    public function show($id)
-    {
-        $photo = Photo::with(['user', 'comments.user', 'likes', 'dislikes'])->findOrFail($id);
-        $comments = $photo->comments()->paginate(3);
-
-        return view('photos.show', compact('photo', 'comments'));
-    }
-
     /**
      * Store a newly created resource in storage.
      */
