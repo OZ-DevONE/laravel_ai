@@ -23,7 +23,6 @@ class PhotoDashboardController extends Controller
             'sort' => 'nullable|string|in:created_at,-created_at,likes_count,-likes_count,comments_count,-comments_count,dislikes_count,-dislikes_count',
         ]);
 
-        // Использование QueryBuilder для безопасного построения запросов
         $photos = QueryBuilder::for(Photo::with(['user', 'comments.user', 'likes', 'dislikes']))
             ->allowedFilters([
                 AllowedFilter::partial('description'),
