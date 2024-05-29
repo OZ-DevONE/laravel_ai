@@ -15,6 +15,15 @@ class PhotoDashboardController extends Controller
 {
     public function index(Request $request)
     {
+        // Валидация входных данных
+        $request->validate([
+            'filter.user.name' => 'nullable|string|max:255',
+            'filter.description' => 'nullable|string|max:255',
+            'filter.created_at' => 'nullable|date',
+            'sort' => 'nullable|string|in:created_at,-created_at,likes_count,-likes_count,comments_count,-comments_count,dislikes_count,-dislikes_count',
+        ]);
+
+        // Использование QueryBuilder для безопасного построения запросов
         $photos = QueryBuilder::for(Photo::with(['user', 'comments.user', 'likes', 'dislikes']))
             ->allowedFilters([
                 AllowedFilter::partial('description'),
