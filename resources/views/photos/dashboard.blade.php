@@ -9,6 +9,7 @@
             </button>
             <div class="collapse" id="filterCollapse">
                 <form method="GET" action="{{ route('photo.index') }}">
+                    <!-- Поля фильтров -->
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="user_name" class="form-label">{{ __('Имя автора') }}</label>
@@ -64,7 +65,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row justify-content-center">
         @if($photos->isEmpty())
             <div class="col-md-10">
@@ -81,6 +82,7 @@
                         </a>
                         <div class="card-body">
                             <p class="card-text">{{ __('Автор: ') . $photo->user->name }}</p>
+                            <p class="card-text">{{ __('Описание: ') . $photo->description }}</p>
                             <p class="card-text"><small class="text-muted">{{ __('Дата: ') . $photo->created_at->format('d.m.Y') }}</small></p>
                         </div>
                     </div>

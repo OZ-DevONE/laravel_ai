@@ -15,11 +15,13 @@ class ReportController extends Controller
         $userId = Auth::id();
         $reports = QueryBuilder::for(Report::class)
             ->where('user_id', $userId)
+            ->with(['user', 'photo'])
             ->allowedFilters([
                 AllowedFilter::exact('status'),
+                AllowedFilter::scope('created_after'),
+                AllowedFilter::scope('created_before'),
             ])
-            ->orderByRaw("CASE WHEN status = 'Новая' THEN 0 ELSE 1 END, created_at DESC")
-            ->with('photo')
+            ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->appends($request->query());
 
@@ -30,13 +32,11 @@ class ReportController extends Controller
     {
         $userId = Auth::id();
         
-        // Валидация данных
         $request->validate([
             'reason' => 'required|string|in:Нарушение цензуры,Оскорбительный контент,Спам,Прочее|max:255',
             'custom_reason' => 'nullable|string|max:200',
         ]);
 
-        // Проверка лимитов жалоб
         $totalReportsCount = Report::where('user_id', $userId)->count();
         $photoReportsCount = Report::where('user_id', $userId)->where('photo_id', $photoId)->count();
 
@@ -48,7 +48,6 @@ class ReportController extends Controller
             return back()->withErrors(['limit' => 'Вы не можете оставить более 10 жалоб на эту фотографию. Пожалуйста, дождитесь решения по вашим предыдущим жалобам.']);
         }
 
-        // Создание жалобы
         Report::create([
             'user_id' => $userId,
             'photo_id' => $photoId,
@@ -68,12 +67,45 @@ class ReportController extends Controller
             abort(403, 'Вы не можете удалить эту жалобу.');
         }
 
-        if ($report->status !== 'Новая') {
-            return back()->withErrors(['limit' => 'Вы не можете удалить эту жалобу, так как она уже обработана.']);
+        if ($report->status === 'Новая Жалоба') {
+            $report->delete();
+            return back()->with('success', 'Жалоба успешно удалена.');
+        } else {
+            return back()->withErrors(['limit' => 'Вы не можете удалить эту жалобу, так как она уже обработана или редактировалась.']);
+        }
+    }
+
+    public function edit($id)
+    {
+        $userId = Auth::id();
+        $report = Report::where('id', $id)->where('user_id', $userId)->firstOrFail();
+
+        if ($report->reason != 'Прочее' || $report->status != 'Новая Жалоба') {
+            return redirect()->route('reports.index')->withErrors(['edit' => 'Вы можете редактировать только жалобы с причиной "Прочее" и статусом "Новая Жалоба".']);
         }
 
-        $report->delete();
+        return view('reports.edit', compact('report'));
+    }
 
-        return back()->with('success', 'Жалоба успешно удалена.');
+    public function update(Request $request, $id)
+    {
+        $userId = Auth::id();
+        $report = Report::where('id', $id)->where('user_id', $userId)->firstOrFail();
+
+        if ($report->reason != 'Прочее' || $report->status != 'Новая Жалоба') {
+            return redirect()->route('reports.index')->withErrors(['edit' => 'Вы можете редактировать только жалобы с причиной "Прочее" и статусом "Новая Жалоба".']);
+        }
+
+        $request->validate([
+            'reason' => 'required|string|in:Нарушение цензуры,Оскорбительный контент,Спам,Прочее|max:255',
+            'custom_reason' => 'nullable|string|max:200',
+        ]);
+
+        $report->update([
+            'reason' => $request->reason,
+            'custom_reason' => $request->custom_reason,
+        ]);
+
+        return redirect()->route('reports.index')->with('success', 'Жалоба успешно обновлена.');
     }
 }

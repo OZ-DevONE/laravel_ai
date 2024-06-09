@@ -5,9 +5,7 @@
     <h1>{{ __('Все жалобы') }}</h1>
 
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <form method="GET" action="{{ route('admin.reports.index') }}" class="mb-4">
@@ -43,6 +41,8 @@
                     <th scope="col">{{ __('Причина') }}</th>
                     <th scope="col">{{ __('Комментарий') }}</th>
                     <th scope="col">{{ __('Статус') }}</th>
+                    <th scope="col">{{ __('Дата и время') }}</th>
+                    <th scope="col">{{ __('Комментарий Администрации') }}</th>
                     <th scope="col">{{ __('Действия') }}</th>
                 </tr>
             </thead>
@@ -53,10 +53,14 @@
                         <td>{{ $report->user->name }}</td>
                         <td>
                             <img src="{{ asset('storage/' . $report->photo->path) }}" class="img-fluid" style="max-width: 100px; max-height: 100px; object-fit: contain;" alt="Photo">
+                            <p>{{ $report->photo->description }}</p>
+                            <p><small>{{ __('Автор:') }} {{ $report->photo->user->name }}</small></p>
                         </td>
                         <td>{{ $report->reason }}</td>
                         <td>{{ $report->custom_reason ?: '—' }}</td>
                         <td>{{ $report->status }}</td>
+                        <td>{{ $report->created_at->format('d.m.Y H:i:s') }}</td>
+                        <td>{{ $report->admin_comment ?: '—' }}</td>
                         <td>
                             <a href="{{ route('admin.reports.edit', $report->id) }}" class="btn btn-warning btn-sm">{{ __('Редактировать') }}</a>
                             <form action="{{ route('admin.reports.destroy', $report->id) }}" method="POST" class="d-inline">

@@ -17,6 +17,11 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
@@ -79,7 +84,7 @@
                                 </li>
                             @else
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ url('/home') }}">{{ __('Домой') }}</a>
+                                    <a class="nav-link" href="{{ url('/home') }}">{{ __('Генерация фото') }}</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('photos.index') }}">{{ __('Мои фото') }}</a>

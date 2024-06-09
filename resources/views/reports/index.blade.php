@@ -14,6 +14,11 @@
             {{ $errors->first('limit') }}
         </div>
     @endif
+    @if($errors->has('edit'))
+        <div class="alert alert-danger">
+            {{ $errors->first('edit') }}
+        </div>
+    @endif
 
     <form method="GET" action="{{ route('reports.index') }}" class="mb-4">
         <div class="form-row">
@@ -45,6 +50,7 @@
                     <th scope="col">{{ __('Комментарий') }}</th>
                     <th scope="col">{{ __('Статус') }}</th>
                     <th scope="col">{{ __('Комментарий Администрации') }}</th>
+                    <th scope="col">{{ __('Дата и время') }}</th>
                     <th scope="col">{{ __('Действия') }}</th>
                 </tr>
             </thead>
@@ -58,22 +64,20 @@
                         <td>{{ $report->reason }}</td>
                         <td>{{ $report->custom_reason ?: '—' }}</td>
                         <td>{{ $report->status }}</td>
+                        <td>{{ $report->admin_comment ?: '—' }}</td>
+                        <td>{{ $report->created_at->format('d.m.Y H:i:s') }}</td>
                         <td>
-                            @if($report->admin_comment)
-                                <span>{{ $report->admin_comment }}</span>
-                            @else
-                                <span>{{ __('—') }}</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($report->status == 'Новая')
-                                <form action="{{ route('reports.destroy', $report->id) }}" method="POST">
+                            @if($report->status == 'Новая Жалоба')
+                                @if($report->reason == 'Прочее')
+                                    <a href="{{ route('reports.edit', $report->id) }}" class="btn btn-warning btn-sm">{{ __('Редактировать') }}</a>
+                                @endif
+                                <form action="{{ route('reports.destroy', $report->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm">{{ __('Удалить') }}</button>
                                 </form>
                             @else
-                                <span>{{ __('Удалить нельзя') }}</span>
+                                <span>{{ __('Действий нет') }}</span>
                             @endif
                         </td>
                     </tr>

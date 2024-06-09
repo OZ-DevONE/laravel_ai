@@ -27,10 +27,17 @@ Route::middleware(['banned'])->group(function () {
     Route::get('/photo/{id}', [PhotoDashboardController::class, 'show'])->name('photo.show');
     
     Route::middleware('auth')->group(function () {
+        // Роутеры для работы с жалобами
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-        Route::delete('/reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
-    
+        Route::post('/reports/{photoId}', [ReportController::class, 'store'])->name('reports.store');
+        Route::delete('/reports/{id}', [ReportController::class, 'destroy'])->name('reports.destroy');
+        Route::get('/reports/{id}/edit', [ReportController::class, 'edit'])->name('reports.edit');
+        Route::put('/reports/{id}', [ReportController::class, 'update'])->name('reports.update');
+        
+        // Подача жалобы
         Route::post('/photo/{photo}/report', [ReportController::class, 'store'])->name('report.store');
+
+        // Оставить коментарий на фото
         Route::post('/photo/{photo}/comment', [PhotoDashboardController::class, 'storeComment'])->name('photo.comment.store');
         Route::patch('/comment/{comment}', [PhotoDashboardController::class, 'updateComment'])->name('comment.update');
         Route::delete('/comment/{comment}', [PhotoDashboardController::class, 'destroyComment'])->name('comment.destroy');

@@ -40,7 +40,7 @@ class PhotoDashboardController extends Controller
                 '-likes_count',
                 '-dislikes_count',
             ])
-            ->where('is_blocked', false) // Фильтр для исключения забаненных фото
+            ->where('is_blocked', false)
             ->withCounts()
             ->paginate(6)
             ->appends(request()->query());
