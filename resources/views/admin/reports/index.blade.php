@@ -22,10 +22,17 @@
                 <input type="date" name="filter[created_at]" class="form-control" placeholder="{{ __('Дата') }}" value="{{ request('filter.created_at') }}">
             </div>
             <div class="col">
+                <select name="sort" class="form-control">
+                    <option value="">{{ __('Сортировка') }}</option>
+                    <option value="complaint_count" {{ request('sort') == 'complaint_count' ? 'selected' : '' }}>{{ __('Количество жалоб') }}</option>
+                </select>
+            </div>
+            <div class="col">
                 <button type="submit" class="btn btn-primary">{{ __('Фильтр') }}</button>
             </div>
         </div>
     </form>
+    
 
     @if($reports->isEmpty())
         <div class="alert alert-warning" role="alert">

@@ -17,23 +17,30 @@ class AdminReportController extends Controller
     {
         $query = QueryBuilder::for(Report::class)
             ->with(['photo', 'user']);
-    
+
         // Фильтрация по статусу
-        if ($request->has('filter.status')) {
+        if ($request->has('filter.status') && $request->input('filter.status') !== null) {
             $query->where('status', $request->input('filter.status'));
         }
-    
+
         // Фильтрация по дате
-        if ($request->has('filter.created_at')) {
+        if ($request->has('filter.created_at') && $request->input('filter.created_at') !== null) {
             $date = $request->input('filter.created_at');
             $query->whereDate('created_at', $date);
         }
-    
+
+        // Сортировка по количеству жалоб
+        if ($request->has('sort') && $request->input('sort') === 'complaint_count') {
+            $query->orderBy('complaint_count', 'desc');
+        }
+
+        // Сначала выводить жалобы с множественными жалобами
+        $query->orderBy('complaint_count', 'desc');
+
         $reports = $query->paginate(10)->appends($request->query());
-    
+
         return view('admin.reports.index', compact('reports'));
     }
-    
 
     public function edit($id)
     {
