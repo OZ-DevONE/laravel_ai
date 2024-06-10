@@ -15,44 +15,56 @@ class AdminReportController extends Controller
      */
     public function index(Request $request)
     {
-        $reports = QueryBuilder::for(Report::class)
-            ->allowedFilters([
-                AllowedFilter::exact('status'),
-                AllowedFilter::exact('created_at'),
-            ])
-            ->paginate(10)
-            ->appends($request->query());
-
+        $query = QueryBuilder::for(Report::class)
+            ->with(['photo', 'user']);
+    
+        // Фильтрация по статусу
+        if ($request->has('filter.status')) {
+            $query->where('status', $request->input('filter.status'));
+        }
+    
+        // Фильтрация по дате
+        if ($request->has('filter.created_at')) {
+            $date = $request->input('filter.created_at');
+            $query->whereDate('created_at', $date);
+        }
+    
+        $reports = $query->paginate(10)->appends($request->query());
+    
         return view('admin.reports.index', compact('reports'));
     }
+    
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
-        $report = Report::findOrFail($id);
+        $report = Report::with('user')->findOrFail($id);
+    
         return view('admin.reports.edit', compact('report'));
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|string|in:' . implode(',', Report::STATUSES) . '|max:255',
-            'admin_comment' => 'nullable|string|max:1000',
+            'status' => 'required|array',
+            'status.*' => 'string|in:' . implode(',', Report::STATUSES) . '|max:255',
+            'admin_comment' => 'nullable|array',
+            'admin_comment.*' => 'nullable|string|max:1000',
         ]);
-
+    
         $report = Report::findOrFail($id);
-        $report->update([
-            'status' => $request->status,
-            'admin_comment' => $request->admin_comment,
-        ]);
-
-        return redirect()->route('admin.reports.index')->with('success', 'Жалоба успешно обновлена.');
-    }
+    
+        foreach ($report->userReports as $userReport) {
+            $status = $request->status[$userReport->user_id] ?? $userReport->status;
+            $adminComment = $request->admin_comment[$userReport->user_id] ?? null;
+    
+            $userReport->update([
+                'status' => $status,
+                'admin_comment' => $adminComment,
+            ]);
+        }
+    
+        return redirect()->route('admin.reports.index')->with('success', 'Жалобы успешно обновлены.');
+    }    
 
     /**
      * Remove the specified resource from storage.
@@ -64,4 +76,12 @@ class AdminReportController extends Controller
 
         return redirect()->route('admin.reports.index')->with('success', 'Жалоба успешно удалена.');
     }
+
+    public function show($id)
+    {
+        $report = Report::with(['user', 'photo'])->findOrFail($id);
+
+        return view('admin.reports.show', compact('report'));
+    }
+
 }

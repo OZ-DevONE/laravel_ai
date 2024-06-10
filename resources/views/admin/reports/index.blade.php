@@ -35,35 +35,28 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">{{ __('ID') }}</th>
-                    <th scope="col">{{ __('Пользователь') }}</th>
                     <th scope="col">{{ __('Фото') }}</th>
-                    <th scope="col">{{ __('Причина') }}</th>
-                    <th scope="col">{{ __('Комментарий') }}</th>
-                    <th scope="col">{{ __('Статус') }}</th>
+                    <th scope="col">{{ __('Количество жалоб') }}</th>
                     <th scope="col">{{ __('Дата и время') }}</th>
-                    <th scope="col">{{ __('Комментарий Администрации') }}</th>
                     <th scope="col">{{ __('Действия') }}</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($reports as $report)
+                @foreach($reports->groupBy('photo_id') as $photoId => $groupedReports)
                     <tr>
-                        <th scope="row">{{ $report->id }}</th>
-                        <td>{{ $report->user->name }}</td>
                         <td>
-                            <img src="{{ asset('storage/' . $report->photo->path) }}" class="img-fluid" style="max-width: 100px; max-height: 100px; object-fit: contain;" alt="Photo">
-                            <p>{{ $report->photo->description }}</p>
-                            <p><small>{{ __('Автор:') }} {{ $report->photo->user->name }}</small></p>
+                            <img src="{{ asset('storage/' . $groupedReports->first()->photo->path) }}" class="img-fluid" style="max-width: 100px; max-height: 100px; object-fit: contain;" alt="Photo">
                         </td>
-                        <td>{{ $report->reason }}</td>
-                        <td>{{ $report->custom_reason ?: '—' }}</td>
-                        <td>{{ $report->status }}</td>
-                        <td>{{ $report->created_at->format('d.m.Y H:i:s') }}</td>
-                        <td>{{ $report->admin_comment ?: '—' }}</td>
                         <td>
-                            <a href="{{ route('admin.reports.edit', $report->id) }}" class="btn btn-warning btn-sm">{{ __('Редактировать') }}</a>
-                            <form action="{{ route('admin.reports.destroy', $report->id) }}" method="POST" class="d-inline">
+                            {{ $groupedReports->sum('complaint_count') }}
+                        </td>
+                        <td>
+                            {{ $groupedReports->first()->created_at->format('d.m.Y H:i:s') }}
+                        </td>
+                        <td>
+                            <a href="{{ route('admin.reports.show', $groupedReports->first()->id) }}" class="btn btn-info btn-sm">{{ __('Просмотреть') }}</a>
+                            <a href="{{ route('admin.reports.edit', $groupedReports->first()->id) }}" class="btn btn-warning btn-sm">{{ __('Редактировать') }}</a>
+                            <form action="{{ route('admin.reports.destroy', $groupedReports->first()->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm">{{ __('Удалить') }}</button>

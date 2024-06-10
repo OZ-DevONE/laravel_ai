@@ -36,27 +36,27 @@ class ReportController extends Controller
             'reason' => 'required|string|in:Нарушение цензуры,Оскорбительный контент,Спам,Прочее|max:255',
             'custom_reason' => 'nullable|string|max:200',
         ]);
-
-        $totalReportsCount = Report::where('user_id', $userId)->count();
-        $photoReportsCount = Report::where('user_id', $userId)->where('photo_id', $photoId)->count();
-
-        if ($totalReportsCount >= 20) {
-            return back()->withErrors(['limit' => 'Вы не можете оставить более 20 жалоб. Пожалуйста, дождитесь решения по вашим предыдущим жалобам.']);
+    
+        $existingReport = Report::where('photo_id', $photoId)->where('reason', $request->reason)->first();
+    
+        if ($existingReport) {
+            if ($request->reason === 'Прочее') {
+                $existingReport->update(['custom_reason' => $request->custom_reason]);
+            }
+            $existingReport->increment('complaint_count');
+            return back()->with('success', 'Ваша жалоба добавлена к существующей. Пожалуйста, дождитесь решения.');
+        } else {
+            Report::create([
+                'user_id' => $userId,
+                'photo_id' => $photoId,
+                'reason' => $request->reason,
+                'custom_reason' => $request->custom_reason,
+                'complaint_count' => 1,
+            ]);
+            return back()->with('success', 'Ваша жалоба успешно отправлена. Пожалуйста, дождитесь решения по вашей жалобе.');
         }
-
-        if ($photoReportsCount >= 10) {
-            return back()->withErrors(['limit' => 'Вы не можете оставить более 10 жалоб на эту фотографию. Пожалуйста, дождитесь решения по вашим предыдущим жалобам.']);
-        }
-
-        Report::create([
-            'user_id' => $userId,
-            'photo_id' => $photoId,
-            'reason' => $request->reason,
-            'custom_reason' => $request->custom_reason,
-        ]);
-
-        return back()->with('success', 'Ваша жалоба успешно отправлена. Пожалуйста, дождитесь решения по вашей жалобе.');
-    }
+    }    
+    
 
     public function destroy($id)
     {

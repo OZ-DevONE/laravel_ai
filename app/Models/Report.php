@@ -16,6 +16,7 @@ class Report extends Model
         'custom_reason',
         'status',
         'admin_comment',
+        'complaint_count',
     ];
 
     const STATUSES = [
@@ -37,5 +38,10 @@ class Report extends Model
     public function photo()
     {
         return $this->belongsTo(Photo::class);
+    }
+
+    public function userReports()
+    {
+        return $this->hasMany(Report::class, 'photo_id', 'photo_id');
     }
 }

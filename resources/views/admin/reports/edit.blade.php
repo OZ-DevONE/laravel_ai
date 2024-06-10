@@ -13,38 +13,26 @@
     <form method="POST" action="{{ route('admin.reports.update', $report->id) }}">
         @csrf
         @method('PUT')
-        <div class="form-group">
-            <label for="status">{{ __('Статус') }}</label>
-            <select name="status" id="status" class="form-control" required>
-                @foreach(App\Models\Report::STATUSES as $status)
-                    <option value="{{ $status }}" {{ $report->status == $status ? 'selected' : '' }}>{{ __($status) }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-group mt-3" id="admin-comment" style="display: none;">
-            <label for="admin_comment">{{ __('Комментарий администратора') }}</label>
-            <textarea name="admin_comment" id="admin_comment" class="form-control" rows="3" maxlength="1000">{{ $report->admin_comment }}</textarea>
-        </div>
+
+        <h3>{{ __('Жалобы по этой фотографии') }}</h3>
+        @foreach($report->userReports as $userReport)
+            <div class="form-group mt-3">
+                <label>{{ __('Пользователь: ') }} {{ $userReport->user->name }} ({{ $userReport->user->email }})</label>
+                <p>{{ __('Причина: ') }} {{ $userReport->reason }}</p>
+
+                <label for="status_{{ $userReport->user_id }}">{{ __('Статус') }}</label>
+                <select name="status[{{ $userReport->user_id }}]" id="status_{{ $userReport->user_id }}" class="form-control" required>
+                    @foreach(App\Models\Report::STATUSES as $status)
+                        <option value="{{ $status }}" {{ $userReport->status == $status ? 'selected' : '' }}>{{ __($status) }}</option>
+                    @endforeach
+                </select>
+
+                <label for="admin_comment_{{ $userReport->user_id }}" class="mt-3">{{ __('Комментарий администратора') }}</label>
+                <textarea name="admin_comment[{{ $userReport->user_id }}]" id="admin_comment_{{ $userReport->user_id }}" class="form-control" rows="3" maxlength="1000" placeholder="{{ __('Оставьте пустым, если нет комментария') }}">{{ $userReport->admin_comment }}</textarea>
+            </div>
+        @endforeach
+
         <button type="submit" class="btn btn-primary mt-3">{{ __('Обновить') }}</button>
     </form>
 </div>
-
-<script>
-    document.getElementById('status').addEventListener('change', function() {
-        var adminComment = document.getElementById('admin-comment');
-        if (this.value === 'Ответ от администрации') {
-            adminComment.style.display = 'block';
-            document.getElementById('admin_comment').required = true;
-        } else {
-            adminComment.style.display = 'none';
-            document.getElementById('admin_comment').required = false;
-        }
-    });
-
-    // Show the admin comment field if the current status is "Ответ от администрации"
-    if (document.getElementById('status').value === 'Ответ от администрации') {
-        document.getElementById('admin-comment').style.display = 'block';
-        document.getElementById('admin_comment').required = true;
-    }
-</script>
 @endsection
