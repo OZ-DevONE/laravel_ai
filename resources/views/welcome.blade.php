@@ -27,7 +27,7 @@
                 <div class="carousel-item">
                     <img src="https://cdn.discordapp.com/attachments/802575530473685043/1249378433260322927/e1e17a07-5878-4575-a437-98edc30d7fba.png?ex=666715d6&is=6665c456&hm=1e55a8299f53ad1748fe20751b375e200fed8a48e52cdb1b3f542a6f6cc71322&" class="d-block w-100" alt="Example Image 3">
                     <div class="carousel-caption d-none d-md-block">
-                        <h5>Пример изображения 3</h5>
+                        <h5>Фото сгенерированное ИИ</h5>
                     </div>
                 </div>
             </div>
