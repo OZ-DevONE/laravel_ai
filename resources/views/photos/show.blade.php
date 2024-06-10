@@ -29,6 +29,25 @@
             </div>
 
             @auth
+                <!-- Icon and button for adding/removing from favorites -->
+                <div class="mt-4">
+                    @if($isFavorite)
+                        <form method="POST" action="{{ route('photo.unfavorite', $photo->id) }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-warning btn-sm">
+                                <i class="fas fa-star text-warning"></i> {{ __('Удалить из избранных') }}
+                            </button>
+                        </form>
+                    @else
+                        <form method="POST" action="{{ route('photo.favorite', $photo->id) }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-secondary btn-sm">
+                                <i class="far fa-star text-secondary"></i> {{ __('Добавить в избранные') }}
+                            </button>
+                        </form>
+                    @endif
+                </div>
+
                 <!-- Complaint button -->
                 <div class="mt-4">
                     @if(session('success'))

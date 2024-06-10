@@ -61,4 +61,9 @@ class Photo extends Model
         }
         return true;
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
 }

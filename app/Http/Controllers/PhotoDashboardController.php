@@ -6,6 +6,7 @@ use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Photo;
 use App\Models\Dislike;
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -56,8 +57,13 @@ class PhotoDashboardController extends Controller
             ->withCount(['likes', 'dislikes'])
             ->findOrFail($id);
         $comments = $photo->comments()->orderBy('created_at', 'desc')->paginate(5);
-
-        return view('photos.show', compact('photo', 'comments'));
+        $user = Auth::user();
+        $isFavorite = false;
+    
+        if ($user) {
+            $isFavorite = Favorite::where('user_id', $user->id)->where('photo_id', $photo->id)->exists();
+        }
+        return view('photos.show', compact('photo', 'comments', 'isFavorite'));
     }
 
     public function __construct()

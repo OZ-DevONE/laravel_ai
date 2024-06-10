@@ -8,6 +8,7 @@ use App\Http\Controllers\PhotoDashboardController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\FavoriteController;
 
 Route::middleware(['banned'])->group(function () {
     Route::get('/', function () {
@@ -43,6 +44,11 @@ Route::middleware(['banned'])->group(function () {
         Route::delete('/comment/{comment}', [PhotoDashboardController::class, 'destroyComment'])->name('comment.destroy');
         Route::post('/photo/{photo}/like', [PhotoDashboardController::class, 'likePhoto'])->name('photo.like');
         Route::post('/photo/{photo}/dislike', [PhotoDashboardController::class, 'dislikePhoto'])->name('photo.dislike');
+
+        // Избранные
+        Route::get('/image/favorites', [FavoriteController::class, 'viewFavorites'])->name('photo.favorites');
+        Route::post('/image/{photo}/favorite', [FavoriteController::class, 'addToFavorites'])->name('photo.favorite');
+        Route::post('/image/{photo}/unfavorite', [FavoriteController::class, 'removeFromFavorites'])->name('photo.unfavorite');
     });
 
     Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
