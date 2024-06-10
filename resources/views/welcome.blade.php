@@ -13,19 +13,19 @@
         <div id="imageSlider" class="carousel slide mb-4" data-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="https://cdn.discordapp.com/attachments/802575530473685043/1249377136289124382/60d3bac1-b14f-4197-b4b9-a6b218dd15ac.png?ex=666714a1&is=6665c321&hm=23c5b5ee97898af3150a8f1835265b988954872d65b8ccd57e464afbb8778515&" class="d-block w-100" alt="Example Image 1">
+                    <img src="{{asset('img/img.png')}}" class="d-block w-100" alt="Example Image 1">
                     <div class="carousel-caption d-none d-md-block">
                         <h5>Фото сгенерированное ИИ</h5>
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <img src="https://cdn.discordapp.com/attachments/802575530473685043/1249378025183907960/8890cd5e-fdc5-4df9-ad58-250f3e23fcc0.png?ex=66671575&is=6665c3f5&hm=bee8856d072e611af1beba92b458cecc39480b7f89f63cd139063c019a488d4b&" class="d-block w-100" alt="Example Image 2">
+                    <img src="{{asset('img/8890cd5e-fdc5-4df9-ad58-250f3e23fcc0.png')}}" class="d-block w-100" alt="Example Image 2">
                     <div class="carousel-caption d-none d-md-block">
                         <h5>Фото сгенерированное ИИ</h5>
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <img src="https://cdn.discordapp.com/attachments/802575530473685043/1249378433260322927/e1e17a07-5878-4575-a437-98edc30d7fba.png?ex=666715d6&is=6665c456&hm=1e55a8299f53ad1748fe20751b375e200fed8a48e52cdb1b3f542a6f6cc71322&" class="d-block w-100" alt="Example Image 3">
+                    <img src="{{asset('img/e1e17a07-5878-4575-a437-98edc30d7fba.png')}}" class="d-block w-100" alt="Example Image 3">
                     <div class="carousel-caption d-none d-md-block">
                         <h5>Фото сгенерированное ИИ</h5>
                     </div>
