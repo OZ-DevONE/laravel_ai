@@ -31,6 +31,15 @@ class ReportController extends Controller
     public function store(Request $request, $photoId)
     {
         $userId = Auth::id();
+        $totalReportsByUser = Report::where('user_id', $userId)->count();
+        if ($totalReportsByUser > 20) {
+            return back()->with('error', 'Вы достигли лимита на отправку жалоб. Пожалуйста, дождитесь решения по текущим жалобам.');
+        }
+    
+        $reportsOnSamePhoto = Report::where('user_id', $userId)->where('photo_id', $photoId)->count();
+        if ($reportsOnSamePhoto >= 10) {
+            return back()->with('error', 'Вы уже отправили максимальное количество жалоб на эту фотографию.');
+        }
         
         $request->validate([
             'reason' => 'required|string|in:Нарушение цензуры,Оскорбительный контент,Спам,Прочее|max:255',
